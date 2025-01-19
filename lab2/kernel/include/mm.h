@@ -9,7 +9,6 @@
 #define SECTION_SIZE			(1 << SECTION_SHIFT)	
 
 #define LOW_MEMORY              	(2 * SECTION_SIZE)
-#define CORE0_TIMER_IRQ_CTRL 0x40000040
 
 #ifndef __ASSEMBLER__
 

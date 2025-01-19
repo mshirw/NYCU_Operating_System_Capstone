@@ -1,1 +1,3 @@
-qemu-system-aarch64 -m 1024 -M raspi3b -serial null -serial stdio -kernel kernel8.img
+1. qemu-system-aarch64 -m 1024 -M raspi3b -serial null -serial stdio -kernel kernel8.img //ubuntu vm using
+
+2. qemu-system-aarch64 -M raspi3b -serial null -serial stdio -initrd initramfs.cpio -kernel kernel8.img -display none //wsl using

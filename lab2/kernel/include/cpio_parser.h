@@ -1,5 +1,5 @@
 #define CPIO_HEADER_SIZE 110
-#define CPIO_ADDRESS 0x2000000
+#define FILES_MAX_SIZE 64
 
 typedef struct {
     char c_magic[6];
@@ -26,7 +26,7 @@ typedef struct
     char file_data[1024];
 }cpio_files;
 
-extern cpio_files *cpio_file[10];
+extern cpio_files *cpio_file[FILES_MAX_SIZE];
 unsigned int from_hex(char *str, int len);
 void parse_cpio(const char *cpio_base_addr);
 void list_file_names();

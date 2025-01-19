@@ -2,7 +2,7 @@
 #include "mini_uart.h"
 #include "memalloc.h"
 
-cpio_files *cpio_file[10];
+cpio_files *cpio_file[FILES_MAX_SIZE];
 
 unsigned int from_hex(char *str, int len) {
     unsigned int result = 0;
@@ -28,7 +28,7 @@ void copy_string(char *src, char *dest, int len) {
 
 void init_file_struct()
 {
-    for(int i = 0; i < 10; i++)
+    for(int i = 0; i < FILES_MAX_SIZE; i++)
     {
         cpio_file[i] = 0;
     }

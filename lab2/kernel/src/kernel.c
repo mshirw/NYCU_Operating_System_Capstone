@@ -19,19 +19,23 @@ void kernel_main(void)
 	char *cmdPtr;
 	char **cmdArr[7] = {cmdHelp, cmdHello, cmdReboot, cmdGetBoardRevision, cmdGetARMMemory, cmdListFileNames, cmdReadFile};
 	int supportCmdNum = 7;
-	volatile const unsigned char *cpio_address = 0x20000000; //raspberry pi 3b+ use this address
-	//volatile const unsigned char *cpio_address = 0x8000000; //QEMU sim use this address
+	//volatile const unsigned char *cpio_address = 0x20000000; //raspberry pi 3b+ use this address
+	volatile const unsigned char *cpio_address = 0x8000000; //QEMU sim use this address
 
 	unsigned int bufIndex = 0;
-	//volatile unsigned char *cpio_address = 0x8000000;
+	
+	//uart_binary_to_hex(__kernel_start);
+	//uart_binary_to_hex(__kernel_end);
 	
 	uart_init();
 	uart_send_string("Hello, world!\r\n");
 	parse_cpio(cpio_address);
-	//uart_binary_to_hex(__kernel_start);
-	//uart_binary_to_hex(__kernel_end);
+	//must wait all initialization done before enable uart interrupt
+	uart_enable_interrupt();
 
-	while (1) {
+	while(1);
+
+	/*while (1) {
 		//wait input and show input char
 		charBuf[bufIndex++] = uart_recv();
 		uart_send(charBuf[bufIndex-1]);
@@ -50,5 +54,5 @@ void kernel_main(void)
 				}
 			}
 		}
-	}
+	}*/
 }

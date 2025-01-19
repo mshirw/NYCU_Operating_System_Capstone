@@ -8,6 +8,7 @@ void uart_binary_to_hex(unsigned int d);
 void uart_send_string(char* str);
 void uart_send_string_length(char* str, unsigned int length);
 void uart_cmd_parser(int cmdNum);
+void uart_enable_interrupt();
 unsigned int uart_cmp_string(char *uart_str, char *cmd_str);
 unsigned int uart_cmp_string_length(char *uart_str, char *cmd_str, unsigned int length);
 unsigned int uart_get_string_length(char *str1);

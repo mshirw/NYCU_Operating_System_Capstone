@@ -4,6 +4,7 @@
 #include "reboot.h"
 #include "mailbox.h"
 #include "cpio_parser.h"
+#include "irq.h"
 
 void uart_send ( char c )
 {
@@ -180,6 +181,24 @@ void uart_binary_to_hex(unsigned int d)
     }
 	uart_send_string("\r\n");
 }
+
+void uart_enable_interrupt() {
+    
+    // Enable RX and TX interrupt for mini UART
+    uint32 ier = get32(AUX_MU_IER_REG);
+    //unmask only Receive interrupt
+    ier |= RX_INTERRUPT_BIT; 
+    // unmask both receive and transmit interrupt
+    //ier |= (RX_INTERRUPT_BIT | TX_INTERRUPT_BIT); 
+
+    put32(AUX_MU_IER_REG, ier);
+	
+    // Enable the mini UART interrupt in the second-level interrupt controller
+    uint32 enable_irqs1 = (uint32) ENABLE_IRQS_1;// ENABLE_IRQS_1 defined in irq.h
+    enable_irqs1 |= AUXINIT_BIT_POSTION; // Set bit29
+    put32(ENABLE_IRQS_1, enable_irqs1);
+}
+
 
 void uart_init ( void )
 {
