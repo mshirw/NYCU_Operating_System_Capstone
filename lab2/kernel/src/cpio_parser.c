@@ -111,7 +111,7 @@ void parse_cpio(const char *cpio_base_addr) {
 
 void list_file_names()
 {
-    for(int i = 0; i < 10; i++)
+    for(int i = 0; i < FILES_MAX_SIZE; i++)
     {
         if(cpio_file[i] != 0)
         {
@@ -124,7 +124,7 @@ void list_file_names()
 
 void print_file_data(char *filename)
 {
-    for(int i = 0; i < 10; i++)
+    for(int i = 0; i < FILES_MAX_SIZE; i++)
     {
         if(cpio_file[i] != 0)
         {

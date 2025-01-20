@@ -87,20 +87,7 @@ void uart_cmd_parser(int cmdNum)
 		break;
 	case 6:
 		uart_send_string("Read file: ");
-
-		while(1)
-		{
-			filename[bufIndex++] = uart_recv();
-			uart_send(filename[bufIndex-1]);
-
-			if(filename[bufIndex-1] == '\r')
-			{
-				uart_send_string("\r\n");
-				break;
-			}
-		}
-		print_file_data(filename);
-		//parse_cpio(cpio_address, cmdNum, filename);
+		//files handle were implemented in uart interrupt handler.
 		break;
 	
 	default:
