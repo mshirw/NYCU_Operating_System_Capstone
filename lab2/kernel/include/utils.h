@@ -1,5 +1,5 @@
-#ifndef	_BOOT_H
-#define	_BOOT_H
+#ifndef	_UTILS_H
+#define	_UTILS_H
 
 extern void delay ( unsigned long);
 extern void put32 ( unsigned long, unsigned int );
@@ -14,4 +14,4 @@ typedef signed char int8;
 typedef signed short int16;
 typedef signed int int32;
 
-#endif  /*_BOOT_H */
+#endif  /*_UTILS_H */

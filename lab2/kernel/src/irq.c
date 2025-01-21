@@ -5,6 +5,9 @@
 # include "memalloc.h"
 # include "timer.h"
 
+extern task_timer *timer_head;
+extern int test_global;
+
 void uart_exception_handler_c()
 {
 	static uint16 dataHead = 0;
@@ -63,7 +66,16 @@ void timer_exception_handler_c()
 	uart_send_string("irq callback addr:\r\n");
 	uart_binary_to_hex(timer_head->callback);
 	uart_send_string("\r\n");
-	timer_head->callback("test\r\n");
+
+	uart_send_string("timer addr:\r\n");
+    uart_binary_to_hex(timer_head);
+    uart_send_string("\r\n");
+
+	uart_send_string("test_global:\r\n");
+	uart_binary_to_hex(test_global);
+	uart_send_string("\r\n");
+
+	//timer_head->callback("test\r\n");
 	
 	
 	//timer_head->callback("timer test");

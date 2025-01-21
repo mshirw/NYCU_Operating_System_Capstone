@@ -1,3 +1,6 @@
+#ifndef CPIO_PARSER_H
+#define CPIO_PARSER_H
+
 #define CPIO_HEADER_SIZE 110
 #define FILES_MAX_SIZE 64
 
@@ -32,3 +35,5 @@ void parse_cpio(const char *cpio_base_addr);
 void list_file_names();
 void init_file_struct();
 void print_file_data(char *filename);
+
+#endif

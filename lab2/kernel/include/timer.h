@@ -14,6 +14,7 @@ typedef struct timer
 }task_timer;
 
 extern task_timer *timer_head;
+extern int test_global;
 
 void add_timer(timer_callback callback, uint32 timeout);
 void send_message(char *message);
