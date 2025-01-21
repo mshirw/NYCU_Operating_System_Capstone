@@ -64,13 +64,6 @@ void parse_cpio(const char *cpio_base_addr) {
             
             copy_string(filename, cpio_file[fileIndex]->file_name, namesize);
         }
-
-        /*if(filesize != 0 && cmdNum == 5)
-        {
-            uart_send_string("File: ");
-            uart_send_string_length(cpio_file[fileIndex]->file_name, cpio_file[fileIndex]->file_name_size);
-            uart_send_string("\r\n");
-        }*/
         
         offset += CPIO_HEADER_SIZE + namesize;
 
@@ -86,15 +79,6 @@ void parse_cpio(const char *cpio_base_addr) {
             copy_string(filedata, cpio_file[fileIndex]->file_data, filesize);
             fileIndex++;
         }
-
-        /*if(filesize != 0 && cmdNum == 6)
-        {
-            uart_send_string("File data: ");
-            char *filedata = (char *)(cpio_base_addr + offset);
-            copy_string(filedata, cpio_file[fileIndex]->file_data, filesize);
-            uart_send_string_length(cpio_file[fileIndex]->file_data, filesize);
-            uart_send_string("\r\n");
-        }*/
 
         if (uart_cmp_string_length(filename, "TRAILER!!!", 11) == 1) {
             break;

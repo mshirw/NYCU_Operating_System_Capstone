@@ -3,7 +3,7 @@
 # include "mini_uart.h"
 # include "utils.h"
 # include "memalloc.h"
-
+# include "timer.h"
 
 void uart_exception_handler_c()
 {
@@ -17,9 +17,10 @@ void uart_exception_handler_c()
 	char *cmdGetARMMemory = "# ARM memory";
 	char *cmdListFileNames = "# ls";
 	char *cmdReadFile = "# cat";
+	char *cmdTimer = "# timer";
 	char *cmdPtr;
-	char **cmdArr[7] = {cmdHelp, cmdHello, cmdReboot, cmdGetBoardRevision, cmdGetARMMemory, cmdListFileNames, cmdReadFile};
-	int supportCmdNum = 7;
+	char **cmdArr[8] = {cmdHelp, cmdHello, cmdReboot, cmdGetBoardRevision, cmdGetARMMemory, cmdListFileNames, cmdReadFile, cmdTimer};
+	int supportCmdNum = 8;
 
 	unsigned int iir = get32(AUX_MU_IIR_REG);
 	/*uart_send_string("In uart interruption\n");
@@ -57,24 +58,33 @@ void uart_exception_handler_c()
 
 void timer_exception_handler_c()
 {
-	//uart_send_string("In timer interruption\n");
-	put32(CORE0_TIMER_IRQ_CTRL, 2);
+	uart_send_string("In timer interruption\n");
+	//timer_head->callback = 0x00082320;
+	uart_send_string("irq callback addr:\r\n");
+	uart_binary_to_hex(timer_head->callback);
+	uart_send_string("\r\n");
+	timer_head->callback("test\r\n");
+	
+	
+	//timer_head->callback("timer test");
+
+	/*put32(CORE0_TIMER_IRQ_CTRL, 2);
 
 	unsigned long long cntpct_el0 = 0;//The register count secs with frequency
 	asm volatile("mrs %0,cntpct_el0":"=r"(cntpct_el0));
 	
-	//unsigned long long cntfrq_el0 = 400;//The base frequency
     unsigned long long cntfrq_el0 = 0;//The base frequency
 	asm volatile("mrs %0,cntfrq_el0":"=r"(cntfrq_el0));
 
 	unsigned long long sec = cntpct_el0 / cntfrq_el0;
-	/*uart_send_string("sec:");
-	uart_binary_to_hex(sec);
-	uart_send_string("\n");*/
-	
-	//unsigned long long wait = 800;// wait 2 seconds
+
+	//uart_send_string("sec:");
+	//uart_binary_to_hex(sec);
+	//uart_send_string("\n");
+
+	//frq = 62.5MHz
     unsigned long long wait = cntfrq_el0 * 2;// wait 2 seconds
-	asm volatile ("msr cntp_tval_el0, %0"::"r"(wait));//set new timer
+	asm volatile ("msr cntp_tval_el0, %0"::"r"(wait));//set new timer*/
 }
 
 void irq_except_handler_c()

@@ -5,6 +5,7 @@
 #include "mailbox.h"
 #include "cpio_parser.h"
 #include "irq.h"
+#include "timer.h"
 
 void uart_send ( char c )
 {
@@ -88,6 +89,10 @@ void uart_cmd_parser(int cmdNum)
 	case 6:
 		uart_send_string("Read file: ");
 		//files handle were implemented in uart interrupt handler.
+		break;
+	case 7:
+		//add_timer(send_message, 1);
+		create_timer();
 		break;
 	
 	default:
@@ -173,9 +178,9 @@ void uart_enable_interrupt() {
     
     // Enable RX and TX interrupt for mini UART
     uint32 ier = get32(AUX_MU_IER_REG);
-    //unmask only Receive interrupt
+    //enable Receive interrupt
     ier |= RX_INTERRUPT_BIT; 
-    // unmask both receive and transmit interrupt
+    // enable both receive and transmit interrupt
     //ier |= (RX_INTERRUPT_BIT | TX_INTERRUPT_BIT); 
 
     put32(AUX_MU_IER_REG, ier);
