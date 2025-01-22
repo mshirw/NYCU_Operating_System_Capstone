@@ -92,6 +92,8 @@ void uart_cmd_parser(int cmdNum)
 		break;
 	case 7:
 		add_timer(send_message, 1, "timer 0 timerout");
+		add_timer(send_message, 2, "timer 1 timerout");
+		add_timer(send_message, 3, "timer 2 timerout");
 		break;
 	
 	default:

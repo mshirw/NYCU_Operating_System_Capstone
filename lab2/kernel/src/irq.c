@@ -49,17 +49,30 @@ void uart_exception_handler_c()
 void timer_exception_handler_c()
 {
 	task_timer *timer = 0;
+
 	uart_send_string("In timer interruption\n");
 
-	timer = timer_head;
-
-	while(timer != 0)
+	if(timer_head != 0)
 	{
-		if(timer->next == 0)
-			break;
-		timer = timer->next;
+		timer = timer_head;
+
+		timer->callback(timer->data);
+		
+		timer_head = timer_head->next;
+
+		// Reprogram the hardware timer if there are still timers left
+		if(timer_head) {
+			uart_send_string("\r\nnext timer:\r\n");
+			uart_send_string(timer_head->data);
+			uart_send_string("\r\n");
+			asm volatile("msr cntp_cval_el0, %0"::"r"(timer_head->expiry_time));
+			asm volatile("msr cntp_ctl_el0,%0"::"r"(1));
+		} else {
+			uart_send_string("\r\nno timer leave\r\n");
+			asm volatile("msr cntp_ctl_el0,%0"::"r"(0));
+		}
+
 	}
-	timer->callback(timer->data);
 
 	uart_send_string("\r\n");
 
@@ -100,8 +113,10 @@ void irq_except_handler_c()
 
 		timer_exception_handler_c();
 
+		put32(CORE0_TIMER_IRQ_CTRL, 2);
+
 		//enable timer
-		asm volatile("msr cntp_ctl_el0, %0"::"r"(0x1));
+		//asm volatile("msr cntp_ctl_el0, %0"::"r"(0x1));
 	}
 
 	if (irq_pending1 & AUXINIT_BIT_POSTION)

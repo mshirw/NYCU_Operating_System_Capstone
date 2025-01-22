@@ -7,8 +7,8 @@ typedef void (*timer_callback)(char *message);
 
 typedef struct timer
 {
-    struct task_timer   *next;
-    struct task_timer   *prev;
+    struct timer   *next;
+    struct timer   *prev;
     char                *data;
     uint64              expiry_time;
     timer_callback      callback;
