@@ -6,6 +6,9 @@
 #include "cpio_parser.h"
 #include "irq.h"
 #include "timer.h"
+#include "mini_uart.h"
+
+char **cmdArr[CMD_NUM];
 
 void uart_send ( char c )
 {
@@ -61,9 +64,6 @@ void uart_cmd_reboot()
 
 void uart_cmd_parser(int cmdNum)
 {
-	char filename[256];
-	unsigned int bufIndex = 0;
-
 	switch (cmdNum)
 	{
 	case 0:
@@ -91,8 +91,7 @@ void uart_cmd_parser(int cmdNum)
 		//files handle were implemented in uart interrupt handler.
 		break;
 	case 7:
-		//add_timer(send_message, 1);
-		create_timer();
+		add_timer(send_message, 1, "timer 0 timerout");
 		break;
 	
 	default:
@@ -191,6 +190,25 @@ void uart_enable_interrupt() {
     put32(ENABLE_IRQS_1, enable_irqs1);
 }
 
+void uart_init_cmd()
+{
+	static char cmdTextArr[CMD_NUM][32] = {
+		"help",
+		"hello",
+		"reboot",
+		"board revision",
+		"ARM memory",
+		"ls",
+		"cat",
+		"timer"
+	};
+
+	for(uint8 index = 0; index < CMD_NUM; index++)
+	{
+		cmdArr[index] = &cmdTextArr[index];
+	}
+}
+
 
 void uart_init ( void )
 {
@@ -217,4 +235,6 @@ void uart_init ( void )
 	put32(AUX_MU_BAUD_REG,270);             //Set baud rate to 115200
 
 	put32(AUX_MU_CNTL_REG,3);               //Finally, enable transmitter and receiver
+
+	uart_init_cmd();
 }

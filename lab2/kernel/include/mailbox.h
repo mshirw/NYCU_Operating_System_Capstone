@@ -4,7 +4,6 @@
 #include "utils.h"
 #include "peripherals/base.h"
 
-#define MMIO_BASE       0x3f000000
 #define MAILBOX_BASE    MMIO_BASE + 0xb880
 
 #define MAILBOX0_READ    0x00

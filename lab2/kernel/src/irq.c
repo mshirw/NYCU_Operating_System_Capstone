@@ -6,30 +6,14 @@
 # include "timer.h"
 
 extern task_timer *timer_head;
-extern int test_global;
+extern char **cmdArr[CMD_NUM];
 
 void uart_exception_handler_c()
 {
 	static uint16 dataHead = 0;
 	static uint8 catFlag = 0;
 	uint8 *dataBuffer = (uint8 *)UART_RECEIVE_BUFFER_BASE;
-	char *cmdHelp = "# help";
-	char *cmdHello = "# hello";
-	char *cmdReboot = "# reboot";
-	char *cmdGetBoardRevision = "# board revision";
-	char *cmdGetARMMemory = "# ARM memory";
-	char *cmdListFileNames = "# ls";
-	char *cmdReadFile = "# cat";
-	char *cmdTimer = "# timer";
 	char *cmdPtr;
-	char **cmdArr[8] = {cmdHelp, cmdHello, cmdReboot, cmdGetBoardRevision, cmdGetARMMemory, cmdListFileNames, cmdReadFile, cmdTimer};
-	int supportCmdNum = 8;
-
-	unsigned int iir = get32(AUX_MU_IIR_REG);
-	/*uart_send_string("In uart interruption\n");
-	uart_send_string("iir:");
-	uart_binary_to_hex(iir);
-	uart_send_string("\r\n");*/
 
 	dataBuffer[dataHead++] = uart_recv();
 	uart_send(dataBuffer[dataHead-1]);
@@ -45,7 +29,7 @@ void uart_exception_handler_c()
 			print_file_data(dataBuffer);
 		}
 
-		for(int cmd = 0; cmd < supportCmdNum; cmd++)
+		for(int cmd = 0; cmd < CMD_NUM; cmd++)
 		{
 			cmdPtr = cmdArr[cmd];
 			if(uart_cmp_string(dataBuffer, cmdPtr))
@@ -56,29 +40,28 @@ void uart_exception_handler_c()
 				uart_cmd_parser(cmd);
 			}
 		}
+
+		if(catFlag == 0)
+			uart_send_string("# ");
 	}
 }
 
 void timer_exception_handler_c()
 {
+	task_timer *timer = 0;
 	uart_send_string("In timer interruption\n");
-	//timer_head->callback = 0x00082320;
-	uart_send_string("irq callback addr:\r\n");
-	uart_binary_to_hex(timer_head->callback);
+
+	timer = timer_head;
+
+	while(timer != 0)
+	{
+		if(timer->next == 0)
+			break;
+		timer = timer->next;
+	}
+	timer->callback(timer->data);
+
 	uart_send_string("\r\n");
-
-	uart_send_string("timer addr:\r\n");
-    uart_binary_to_hex(timer_head);
-    uart_send_string("\r\n");
-
-	uart_send_string("test_global:\r\n");
-	uart_binary_to_hex(test_global);
-	uart_send_string("\r\n");
-
-	//timer_head->callback("test\r\n");
-	
-	
-	//timer_head->callback("timer test");
 
 	/*put32(CORE0_TIMER_IRQ_CTRL, 2);
 

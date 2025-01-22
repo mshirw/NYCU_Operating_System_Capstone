@@ -19,6 +19,7 @@ void kernel_main(void)
 
 	uart_init();
 	uart_send_string("Hello, world!\r\n");
+	uart_send_string("# ");
 	parse_cpio(cpio_address);
 	//must wait all initialization done before enable uart interrupt
 	uart_enable_interrupt();

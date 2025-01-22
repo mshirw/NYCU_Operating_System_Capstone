@@ -7,17 +7,16 @@ typedef void (*timer_callback)(char *message);
 
 typedef struct timer
 {
+    struct task_timer   *next;
+    struct task_timer   *prev;
     char                *data;
     uint64              expiry_time;
     timer_callback      callback;
-    struct task_timer   *next;
 }task_timer;
 
 extern task_timer *timer_head;
-extern int test_global;
 
-void add_timer(timer_callback callback, uint32 timeout);
+void add_timer(timer_callback callback, uint32 sec, char *msg);
 void send_message(char *message);
-void create_timer();
 
 #endif

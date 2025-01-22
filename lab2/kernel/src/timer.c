@@ -3,42 +3,58 @@
 #include "utils.h"
 #include "mini_uart.h"
 #include "irq.h"
+#include "str.h"
 
 task_timer *timer_head = 0;
-int test_global = 0;
 
 void send_message(char *message)
 {
     uart_send_string(message);
 }
 
-void create_timer()
+void add_node(task_timer *timer)
 {
-    add_timer(send_message, 3);
+    task_timer *temp_node = 0;
+
+    if(timer_head == 0)
+    {
+        timer_head = timer;
+        timer_head->prev = 0;
+        timer_head->next = 0;
+    }
+    else
+    {
+        temp_node = timer_head;
+
+        while(temp_node != 0)
+        {
+            if(temp_node->next == 0)
+                break;
+            temp_node = temp_node->next;
+        }
+
+        temp_node->next = timer;
+        timer->prev = temp_node;
+    }
 }
 
-void add_timer(timer_callback callback, uint32 timeout)
+void add_timer(timer_callback callback, uint32 sec, char *msg)
 {
     task_timer *timer = (task_timer*)malloc(sizeof(task_timer));
+    char *msg_data = utils_strdup(msg);
+
     uint64 current_time, cntfrq;
 
     timer->callback = callback;
-    uart_send_string("callback addr:\r\n");
-    uart_binary_to_hex(timer->callback);
-    uart_send_string("\r\n");
-
-    uart_send_string("timer addr:\r\n");
-    uart_binary_to_hex(timer);
-    uart_send_string("\r\n");
+    timer->data = msg_data;
     
 	asm volatile("mrs %0, cntpct_el0":"=r"(current_time));
 	asm volatile("mrs %0, cntfrq_el0":"=r"(cntfrq));
 
-    timer->expiry_time = current_time + timeout * cntfrq;
-    asm volatile ("msr cntp_tval_el0, %0"::"r"(timeout * cntfrq));//set timer
+    timer->expiry_time = current_time + sec * cntfrq;
+    asm volatile ("msr cntp_tval_el0, %0"::"r"(sec * cntfrq));//set timer
     
-    timer_head = timer;
-    test_global = 1;
+    add_node(timer);
     //enable timer
     put32(CORE0_TIMER_IRQ_CTRL, 2);
 }
