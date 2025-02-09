@@ -1,9 +1,10 @@
-# include "irq.h"
-# include "peripherals/mini_uart.h"
-# include "mini_uart.h"
-# include "utils.h"
-# include "memalloc.h"
-# include "timer.h"
+#include "irq.h"
+#include "peripherals/mini_uart.h"
+#include "mini_uart.h"
+#include "utils.h"
+#include "memalloc.h"
+#include "timer.h"
+#include "taskQueue.h"
 
 extern task_timer *timer_head;
 extern char **cmdArr[CMD_NUM];
@@ -14,6 +15,8 @@ void uart_exception_handler_c()
 	static uint8 catFlag = 0;
 	uint8 *dataBuffer = (uint8 *)UART_RECEIVE_BUFFER_BASE;
 	char *cmdPtr;
+
+	//uart_send_string("uart_exception\r\n");
 
 	dataBuffer[dataHead++] = uart_recv();
 	uart_send(dataBuffer[dataHead-1]);
@@ -62,11 +65,9 @@ void timer_exception_handler_c()
 
 		// Reprogram the hardware timer if there are still timers left
 		if(timer_head) {
-			uart_send_string("\r\nnext timer:\r\n");
-			uart_send_string(timer_head->data);
-			uart_send_string("\r\n");
 			asm volatile("msr cntp_cval_el0, %0"::"r"(timer_head->expiry_time));
 			asm volatile("msr cntp_ctl_el0,%0"::"r"(1));
+			put32(CORE0_TIMER_IRQ_CTRL, 2);
 		} else {
 			uart_send_string("\r\nno timer leave\r\n");
 			asm volatile("msr cntp_ctl_el0,%0"::"r"(0));
@@ -100,7 +101,6 @@ void irq_except_handler_c()
 	uint32 irq_pending1 = get32(IRQ_PENDING_1);
 	uint32 core0_interrupt_source = get32(CORE0_INTERRUPT_SOURCE);
 	uint32 iir = get32(AUX_MU_IIR_REG);
-	
 
 	asm volatile("msr DAIFSet, 0xf"); // Disable interrupts
 
@@ -111,9 +111,9 @@ void irq_except_handler_c()
 
 		put32(CORE0_TIMER_IRQ_CTRL, 0);
 
-		timer_exception_handler_c();
+		create_task(timer_exception_handler_c, 2);
 
-		put32(CORE0_TIMER_IRQ_CTRL, 2);
+		//put32(CORE0_TIMER_IRQ_CTRL, 2);
 
 		//enable timer
 		//asm volatile("msr cntp_ctl_el0, %0"::"r"(0x1));
@@ -122,10 +122,15 @@ void irq_except_handler_c()
 	if (irq_pending1 & AUXINIT_BIT_POSTION)
 	{
 		if(iir & RX_INTERRUPT_ID)
-			uart_exception_handler_c();
+		{
+			create_task(uart_exception_handler_c, 1);
+		}
+		
 	}
 
+	execute_task();
 	asm volatile("msr DAIFClr, 0xf"); // Enable interrupts
+	
 }
 
 void except_handler_c()

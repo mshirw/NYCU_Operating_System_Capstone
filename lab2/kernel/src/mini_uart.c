@@ -91,9 +91,12 @@ void uart_cmd_parser(int cmdNum)
 		//files handle were implemented in uart interrupt handler.
 		break;
 	case 7:
-		add_timer(send_message, 1, "timer 0 timerout");
-		add_timer(send_message, 2, "timer 1 timerout");
-		add_timer(send_message, 3, "timer 2 timerout");
+		add_timer(send_message, 3, "timer 3 timerout");
+		add_timer(send_message, 2, "timer 2 timerout");
+		add_timer(send_message, 1, "timer 1 timerout");
+		//enable timer
+    	put32(CORE0_TIMER_IRQ_CTRL, 2);
+    	asm volatile("msr cntp_ctl_el0, %0"::"r"(0x1));
 		break;
 	
 	default:
