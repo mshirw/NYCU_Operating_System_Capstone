@@ -28,5 +28,6 @@ typedef struct frame_array
 
 void *malloc(unsigned long size);
 void memalloc_init();
+uint8 calc_log2(uint8 value);
 
 #endif  /*_MEMALLOC_H */

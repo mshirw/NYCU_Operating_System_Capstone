@@ -3,6 +3,7 @@
 #include "cpio_parser.h"
 #include "memalloc.h"
 #include "irq.h"
+#include "str.h"
 
 extern char __kernel_start[];
 extern char __kernel_end[];
@@ -23,6 +24,6 @@ void kernel_main(void)
 	parse_cpio(cpio_address);
 	//must wait all initialization done before enable uart interrupt
 	uart_enable_interrupt();
-
+	memalloc_init();
 	while(1);
 }
