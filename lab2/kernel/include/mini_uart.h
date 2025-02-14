@@ -22,5 +22,6 @@ void uart_cmd_hello();
 void uart_cmd_help();
 void uart_cmd_reboot();
 void uart_init_cmd();
+void printf(char *fmt, ...);
 
 #endif  /*_MINI_UART_H */

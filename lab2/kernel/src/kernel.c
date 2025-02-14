@@ -19,11 +19,12 @@ void kernel_main(void)
 	put32(CORE0_TIMER_IRQ_CTRL, 0);//disable timer
 
 	uart_init();
-	uart_send_string("Hello, world!\r\n");
-	uart_send_string("# ");
+	memalloc_init();
 	parse_cpio(cpio_address);
 	//must wait all initialization done before enable uart interrupt
 	uart_enable_interrupt();
-	memalloc_init();
+	uart_send_string("Hello, world!\r\n");
+	uart_send_string("# ");
+	
 	while(1);
 }

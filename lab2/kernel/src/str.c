@@ -28,7 +28,7 @@ void memset(void *dest, uint8 value, uint32 len)
 {
 	uint32 *tar = dest;
 
-	for(uint32 i = 0; i < len; i++)
+	for(uint32 i = 0; i < len / sizeof(uint32); i++)
 		tar[i] = ((value) | (value << 8) | (value << 16) | (value << 24));
 		
 }
@@ -38,6 +38,6 @@ void memcpy(void *dest, void *src, uint32 len)
 	uint32 *tar = dest;
 	uint32 *source = src;
 
-	for(uint32 i = 0; i < len; i++)
+	for(uint32 i = 0; i < len / sizeof(uint32); i++)
 		tar[i] = source[i];
 }
